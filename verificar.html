@@ -66,7 +66,7 @@ const base = new Date(2024,0,1);
 const diffMs = now - base;
 const daysPassed = Math.floor(diffMs / (1000*60*60*24));
 let dias = total - (daysPassed % total);
-if (dias < 30) dias = 30;
+if (dias < 67) dias = 67;
 document.getElementById("dias").textContent = dias;
 
 const fechaAltaCalc = new Date(now.getTime() - (180 - dias) * 86400000);
