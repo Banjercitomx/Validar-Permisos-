@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Validación de Permiso</title>
+<style>
+    body { font-family: Arial, Helvetica, sans-serif; background: #cfe9d8; margin: 0; padding: 0; }
+    .wrap { max-width: 600px; margin: 20px auto; padding: 12px; }
+    .card { background: white; padding: 22px; border-radius: 10px; box-shadow: 0px 2px 6px rgba(0,0,0,0.20); }
+    h2 { text-align: center; color: #003B2E; font-weight: bold; margin-bottom: 6px; font-size: 24px; text-transform: uppercase; }
+    p.subtitle { text-align: center; font-size: 14px; color: #003B2E; margin-bottom: 18px; font-weight: bold; }
+    label { font-weight: bold; color: #003B2E; font-size: 14px; text-transform: uppercase; display: block; margin-top: 16px; }
+    input[type=text] { width: 100%; padding: 12px; margin-top: 6px; border-radius: 6px; border: 1px solid #b5b5b5; font-size: 16px; box-sizing: border-box; color: #003B2E; font-weight: bold; }
+    .captcha-box { margin-top: 20px; text-align: center; }
+    .captcha-text { display: inline-block; font-size: 32px; font-weight: bold; background: #e1f4e6; padding: 12px 20px; border-radius: 8px; letter-spacing: 4px; color: #003B2E; border: 1px solid #999; }
+    .btn-row { display: flex; justify-content: space-between; margin-top: 22px; gap: 10px; }
+    .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; color: white; }
+    .btn-limpiar { background: #1e7a36; }
+    .btn-validar { background: #2ea54a; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<h2>Valida tu Permiso</h2>
+<p class="subtitle">Captura la información tal como aparece en tu permiso</p>
+<label>FOLIO DE PERMISO:</label>
+<input id="folio" type="text" maxlength="12">
+<label>ÚLTIMOS 8 DIGITOS DEL VIN:</label>
+<input id="vin" type="text" maxlength="8">
+<label>ÚLTIMOS 5 DIGITOS DEL RFC:</label>
+<input id="rfc" type="text" maxlength="5">
+<div class="captcha-box"><div class="captcha-text" id="captchaText"></div></div>
+<input id="captchaInput" type="text" placeholder="Ingrese el código" style="margin-top:12px; padding: 12px; width:100%; border-radius:8px; border:1px solid #b5b5b5; font-size:16px; font-weight:bold; color:#003B2E;">
+<div class="btn-row">
+<button class="btn btn-limpiar" onclick="limpiar()">Limpiar</button>
+<button class="btn btn-validar" onclick="validar()">Validar</button>
+</div>
+</div>
+</div>
+<script>
+const vehicles = [
+{folio:"50984679", marca:"Toyota", vinFull:"3TMLB5JN1RM011856", modelo:"2024", rfcLast5:"50278"},
+{folio:"50387787", marca:"Chevrolet", vinFull:"1GCPWBEH6MZ117056", modelo:"2021", rfcLast5:"05943"},
+{folio:"50497849", marca:"Honda", vinFull:"5J6RW2H59HL056248", modelo:"2017", rfcLast5:"50278"},
+{folio:"50697845", marca:"Chevrolet", vinFull:"3GCUYEED6MG476841", modelo:"2021", rfcLast5:"05943"}
+];
+function generarCaptcha(){
+const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let code="";
+for(let i=0;i<6;i++){ code+=chars.charAt(Math.floor(Math.random()*chars.length)); }
+document.getElementById("captchaText").textContent = code;
+}
+generarCaptcha();
+function limpiar(){
+document.getElementById("folio").value="";
+document.getElementById("vin").value="";
+document.getElementById("rfc").value="";
+document.getElementById("captchaInput").value="";
+generarCaptcha();
+}
+function validar(){
+const capText = document.getElementById("captchaText").textContent.trim();
+const capInput = document.getElementById("captchaInput").value.trim();
+if(capInput !== capText){ alert("Código CAPTCHA incorrecto"); return; }
+const folio = document.getElementById("folio").value.trim();
+const vinInput = document.getElementById("vin").value.trim();
+const rfcInput = document.getElementById("rfc").value.trim();
+const found = vehicles.find(v =>
+v.folio === folio &&
+v.rfcLast5 === rfcInput &&
+v.vinFull.slice(-8).toUpperCase() === vinInput.toUpperCase()
+);
+if(!found){ alert("Datos incorrectos. Verifique la información."); return; }
+const params = new URLSearchParams(found);
+window.location.href = "verificar.html?" + params.toString();
+}
+</script>
+</body>
+</html>
