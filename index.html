@@ -69,7 +69,7 @@ const rfcInput = document.getElementById("rfc").value.trim();
 const found = vehicles.find(v =>
 v.folio === folio &&
 v.rfcLast5 === rfcInput &&
-v.vinFull.slice(-8).toUpperCase() === vinInput.toUpperCase()
+v.vinFull.slice(-5).toUpperCase() === vinInput.toUpperCase()
 );
 if(!found){ alert("Datos incorrectos. Verifique la información."); return; }
 const params = new URLSearchParams(found);
