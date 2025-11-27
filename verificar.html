@@ -8,91 +8,96 @@
 <style>
     body {
         font-family: Arial, Helvetica, sans-serif;
-        background: #eaf7ee;
+        background: #cfe9d8;
         margin: 0;
         padding: 0;
     }
 
     .wrap {
         max-width: 600px;
-        margin: 20px auto;
-        padding: 15px;
+        margin: 18px auto;
+        padding: 10px;
     }
 
     .card {
         background: white;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
+        border-radius: 8px;
+        padding: 18px;
+        box-shadow: 0px 1px 3px rgba(0,0,0,0.25);
     }
 
     .circle {
         width: 260px;
         height: 180px;
-        background: #2e9b4a;
+        background: #2ea54a;
         border-radius: 50%;
         color: white;
-        font-weight: 800;
-        font-size: 36px;
+        font-weight: 900;
+        font-size: 32px;
         display: flex;
         margin: 0 auto 15px auto;
         justify-content: center;
         align-items: center;
         text-align: center;
-        line-height: 42px;
+        line-height: 36px;
+        text-transform: uppercase;
     }
 
     h2 {
         text-align: center;
         font-size: 22px;
-        color: #094e36;
-        margin-bottom: 10px;
+        color: #003B2E;
+        margin-bottom: 6px;
+        font-weight: bold;
+        text-transform: uppercase;
     }
 
     .timestamp {
         text-align: center;
-        color: #094e36;
+        color: #003B2E;
         font-size: 13px;
         margin-bottom: 18px;
+        font-weight: bold;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
+        font-size: 15px;
     }
 
     td {
         padding: 10px;
-        border: 1px solid #dcdcdc;
-        font-size: 15px;
+        border: 1px solid #d0d0d0;
     }
 
     .label {
-        background: #e6f2ea;
-        color: #094e36;
-        font-weight: 700;
-        width: 45%;
+        background: #e1f4e6;
+        color: #003B2E;
+        font-weight: bold;
+        width: 48%;
+        text-transform: uppercase;
     }
 
     .value {
-        font-weight: 800;
-        color: #083e2d;
+        font-weight: bold;
+        color: #003B2E;
     }
 
     .btn {
         display: block;
         width: 100%;
-        background: #2e9b4a;
+        background: #2ea54a;
         border: none;
         padding: 12px;
-        margin-top: 20px;
+        margin-top: 22px;
         border-radius: 8px;
         color: white;
         font-weight: bold;
         cursor: pointer;
         font-size: 16px;
+        text-transform: uppercase;
     }
-
 </style>
 </head>
 <body>
@@ -106,58 +111,73 @@
         <p class="timestamp" id="timestamp"></p>
 
         <table>
-            <tr><td class="label">FOLIO:</td><td class="value" id="folio"></td></tr>
+            <tr><td class="label">FOLIO PERMISO:</td><td class="value" id="folio"></td></tr>
             <tr><td class="label">FECHA DE ALTA:</td><td class="value" id="fechaAlta"></td></tr>
             <tr><td class="label">FECHA MÁXIMA DE RETORNO:</td><td class="value" id="fechaRetorno"></td></tr>
-            <tr><td class="label">DIAS DISPONIBLES:</td><td class="value" id="diasDisponibles"></td></tr>
+            <tr><td class="label">DIAS DISPONIBLES:</td><td class="value" id="dias"></td></tr>
             <tr><td class="label">MARCA:</td><td class="value" id="marca"></td></tr>
             <tr><td class="label">VIN:</td><td class="value" id="vin"></td></tr>
             <tr><td class="label">MODELO:</td><td class="value" id="modelo"></td></tr>
-            <tr><td class="label">RFC:</td><td class="value" id="rfc"></td></tr>
+            <tr><td class="label">ESTATUS PERMISO:</td><td class="value">VIGENTE</td></tr>
+            <tr><td class="label">REMOLQUE:</td><td class="value">SIN REMOLQUE</td></tr>
         </table>
 
-        <button class="btn" onclick="window.history.back()">CERRAR</button>
+        <button class="btn" onclick="window.history.back()">Cerrar</button>
 
     </div>
 </div>
 
 <script>
-// Read query params
+// Read vehicle params from URL
 const p = new URLSearchParams(window.location.search);
 
 document.getElementById("folio").textContent = p.get("folio");
 document.getElementById("marca").textContent = p.get("marca");
 document.getElementById("modelo").textContent = p.get("modelo");
-document.getElementById("vin").textContent = "********" + p.get("vinLast5");
-document.getElementById("rfc").textContent = p.get("rfcLast5");
+
+// VIN MASKING — last 8 digits
+const vinFull = p.get("vinFull");
+const vinLast8 = vinFull.slice(-8);
+document.getElementById("vin").textContent = "********" + vinLast8;
 
 // Timestamp
 const now = new Date();
+const months = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];
 document.getElementById("timestamp").textContent =
-    "FECHA Y HORA DE CONSULTA: " +
-    now.toLocaleString("es-MX", { hour12: false });
+  "FECHA Y HORA DE CONSULTA: " +
+  String(now.getDate()).padStart(2,"0") + "/" +
+  months[now.getMonth()] + "/" +
+  now.getFullYear() + " " +
+  String(now.getHours()).padStart(2,"0") + ":" +
+  String(now.getMinutes()).padStart(2,"0") + ":" +
+  String(now.getSeconds()).padStart(2,"0");
 
-// 180-DAY ROLLING CYCLE
-const totalDias = 180;
+// 180 → 30 days dynamic cycle
+const total = 180;
 
-// How many days since Jan 1, 2024 (stable cycle)
-const startBase = new Date(2024, 0, 1);
-const msDiff = now.getTime() - startBase.getTime();
-const daysPassed = Math.floor(msDiff / (1000*60*60*24));
+// Base reference date for cycle
+const base = new Date(2024,0,1);
+const diffMs = now - base;
+const daysPassed = Math.floor(diffMs / (1000*60*60*24));
 
-// Rolling counter
-let diasDisponibles = totalDias - (daysPassed % totalDias);
-document.getElementById("diasDisponibles").textContent = diasDisponibles;
+// Rolling days left
+let dias = total - (daysPassed % total);
+if (dias < 30) dias = 30;
+document.getElementById("dias").textContent = dias;
 
-// Fecha Alta = today - (180 - diasDisponibles)
-let fechaAlta = new Date(now.getTime() - (totalDias - diasDisponibles) * 24*60*60*1000);
+// Fecha de alta = today - (180 - dias)
+const fechaAltaCalc = new Date(now.getTime() - (180 - dias) * 86400000);
 document.getElementById("fechaAlta").textContent =
-    fechaAlta.toLocaleDateString("es-MX", {year:"numeric", month:"2-digit", day:"2-digit"});
+  String(fechaAltaCalc.getDate()).padStart(2,"0") + "/" +
+  months[fechaAltaCalc.getMonth()] + "/" +
+  fechaAltaCalc.getFullYear();
 
-// Fecha Retorno = fechaAlta + 180 days
-let fechaRetorno = new Date(fechaAlta.getTime() + 180 * 24*60*60*1000);
+// Fecha de retorno = fechaAlta + 180 días
+const fechaRetornoCalc = new Date(fechaAltaCalc.getTime() + 180 * 86400000);
 document.getElementById("fechaRetorno").textContent =
-    fechaRetorno.toLocaleDateString("es-MX", {year:"numeric", month:"2-digit", day:"2-digit"});
+  String(fechaRetornoCalc.getDate()).padStart(2,"0") + "/" +
+  months[fechaRetornoCalc.getMonth()] + "/" +
+  fechaRetornoCalc.getFullYear();
 </script>
 
 </body>
