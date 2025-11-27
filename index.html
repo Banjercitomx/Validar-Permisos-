@@ -28,7 +28,7 @@
 <label>FOLIO DE PERMISO:</label>
 <input id="folio" type="text" maxlength="12">
 <label>ÚLTIMOS 5 DÍGITOS DEL VIN:</label>
-<input id="vin" type="text" maxlength="8">
+<input id="vin" type="text" maxlength="5">
 <label>ÚLTIMOS 5 DIGITOS DEL RFC:</label>
 <input id="rfc" type="text" maxlength="5">
 <div class="captcha-box"><div class="captcha-text" id="captchaText"></div></div>
@@ -41,10 +41,10 @@
 </div>
 <script>
 const vehicles = [
-{folio:"50984679", marca:"Toyota", vinFull:"3TMLB5JN1RM011856", modelo:"2024", rfcLast5:"50278"},
-{folio:"50387787", marca:"Chevrolet", vinFull:"1GCPWBEH6MZ117056", modelo:"2021", rfcLast5:"05943"},
-{folio:"50497849", marca:"Honda", vinFull:"5J6RW2H59HL056248", modelo:"2017", rfcLast5:"50278"},
-{folio:"50697845", marca:"Chevrolet", vinFull:"3GCUYEED6MG476841", modelo:"2021", rfcLast5:"05943"}
+{folio:"50984679", marca:"TOYOTA", vinFull:"3TMLB5JN1RM011856", modelo:"2024", rfcLast5:"50278"},
+{folio:"50387787", marca:"CHEVROLET", vinFull:"1GCPWBEH6MZ117056", modelo:"2021", rfcLast5:"05943"},
+{folio:"50497849", marca:"HONDA", vinFull:"5J6RW2H59HL056248", modelo:"2017", rfcLast5:"50278"},
+{folio:"50697845", marca:"CHEVROLET", vinFull:"3GCUYEED6MG476841", modelo:"2021", rfcLast5:"05943"}
 ];
 function generarCaptcha(){
 const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let code="";
