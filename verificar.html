@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verificar Permiso</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body { font-family:'Roboto',sans-serif; margin:0; padding:0; background:#d7f2dc; }
+
+.circle {
+  width:420px; height:420px; background:#34a853;
+  border-radius:50%;
+  margin:25px auto 0 auto;
+  display:flex; justify-content:center; align-items:center;
+  color:white; font-size:52px; font-weight:700;
+  text-align:center; text-shadow:2px 2px 3px black;
+}
+
+/* Table rows with tight spacing */
+.row {
+  background:white;
+  margin-bottom:10px;
+  padding:10px 14px;
+  border-radius:4px;
+  border:1px solid #c7e7cf;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+
+.label {
+  width: 55%;
+  font-size:20px;
+  font-weight:700;
+  color:#000;
+  line-height:22px;
+  text-align:left;
+}
+
+.value {
+  width: 45%;
+  font-size:20px;
+  font-weight:700;
+  color:#007c4a;
+  text-align:right;
+  padding-left:5px;
+}
+
+button {
+  width:240px;
+  background:#34a853;
+  color:white;
+  border:none;
+  padding:16px;
+  display:block;
+  margin:40px auto;
+  border-radius:10px;
+  font-size:22px;
+  font-weight:700;
+}
+</style>
+</head>
+<body>
+
+<div class="circle">¡Permiso<br>Vigente!</div>
+
+<h2 style="text-align:center; font-size:24px; margin-top:20px; font-weight:700;">
+Permiso de Importación<br>de Auto Americano
+</h2>
+
+<div style="text-align:left; font-size:18px; margin:10px 16px; color:#000;">
+FECHA Y HORA DE CONSULTA: <span id="fechaConsulta"></span>
+</div>
+
+<div class="table" style="width:90%; max-width:650px; margin:auto;">
+
+  <div class="row"><div class="label">FOLIO PERMISO:</div><div class="value" id="folio"></div></div>
+
+  <div class="row"><div class="label">FECHA DE ALTA:</div><div class="value" id="alta"></div></div>
+
+  <div class="row"><div class="label">FECHA MÁXIMA<br>DE RETORNO:</div><div class="value" id="retorno"></div></div>
+
+  <div class="row"><div class="label">DIAS<br>DISPONIBLES:</div><div class="value" id="dias"></div></div>
+
+  <div class="row"><div class="label">MARCA:</div><div class="value" id="marca"></div></div>
+
+  <div class="row"><div class="label">VIN:</div><div class="value" id="vin"></div></div>
+
+  <div class="row"><div class="label">MODELO:</div><div class="value" id="modelo"></div></div>
+
+  <div class="row"><div class="label">ESTATUS<br>PERMISO:</div><div class="value" id="estatus"></div></div>
+
+  <div class="row"><div class="label">REMOLQUE:</div><div class="value" id="remolque"></div></div>
+
+</div>
+
+<button onclick="window.location='index.html'">CERRAR</button>
+
+<script>
+// Read URL params
+const p = new URLSearchParams(window.location.search);
+const folio = p.get("folio");
+const marca = p.get("marca");
+const modelo = p.get("modelo");
+const vin = p.get("vin");
+
+// Mask VIN
+const maskedVin = "********" + vin.slice(-8);
+
+// Date formatting
+const now = new Date();
+const months=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+function formatDMY(date){
+    let d=("0"+date.getDate()).slice(-2);
+    let m=months[date.getMonth()];
+    let y=date.getFullYear();
+    return `${d}/${m}/${y}`;
+}
+
+const alta = formatDMY(now);
+const ret = new Date();
+ret.setDate(ret.getDate() + 180);
+const retorno = formatDMY(ret);
+
+document.getElementById("fechaConsulta").textContent =
+  now.toLocaleDateString("es-MX",{day:"2-digit",month:"long",year:"numeric"}).toUpperCase()
+  + " " + now.toLocaleTimeString("es-MX");
+
+document.getElementById("folio").textContent = folio;
+document.getElementById("alta").textContent = alta;
+document.getElementById("retorno").textContent = retorno;
+document.getElementById("dias").textContent = "180";
+document.getElementById("marca").textContent = marca;
+document.getElementById("vin").textContent = maskedVin;
+document.getElementById("modelo").textContent = modelo;
+document.getElementById("estatus").textContent = "VIGENTE";
+document.getElementById("remolque").textContent = "SIN REMOLQUE";
+</script>
+
+</body>
+</html>
