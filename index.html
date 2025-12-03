@@ -37,6 +37,10 @@
         border-radius: 15px;
     }
 
+    .input-group {
+        margin-bottom: 18px;
+    }
+
     label {
         display: block;
         font-weight: 700;
@@ -45,33 +49,38 @@
         margin-bottom: 6px;
     }
 
-    .input-group {
-        margin-bottom: 18px;
-    }
-
+    /* INPUTS – centered text like the reference */
     input[type="text"] {
         width: 100%;
-        padding: 14px;
+        height: 55px;
+        padding: 0 14px;
         border-radius: 10px;
-        border: 1px solid #ccc;
+        border: 1.5px solid #d3d3d3;
         font-size: 18px;
         box-sizing: border-box;
-        text-align: left;         /* left-justified text */
+        text-align: center;
     }
 
     input[type="text"]::placeholder {
-        color: #9b9b9b;          /* gray hint text */
+        color: #b8b8b8;
         opacity: 1;
-        text-align: left;
+        text-align: center;
+    }
+
+    /* iOS / Safari */
+    input {
+        text-align: center !important;
+    }
+    ::-webkit-input-placeholder {
+        text-align: center !important;
     }
 
     #captchaCanvas {
         display: block;
         width: 160px;
         height: 50px;
-        margin-bottom: 10px;
-        background: #fff;
-        border-radius: 4px;
+        margin: 5px 0 10px 0;
+        background: #f2f2f2;
     }
 
     .buttons {
@@ -164,7 +173,9 @@
 </div>
 
 <script>
-// BASE DE DATOS DE VEHÍCULOS
+// =====================
+// BASE DE DATOS
+// =====================
 const vehicles = [
   { folio: "50984679", marca: "TOYOTA",    vinFull: "3TMLB5JN1RM011856", modelo: "2024", rfcLast5: "50278" },
   { folio: "50387787", marca: "CHEVROLET", vinFull: "1GCPWBEH6MZ117056", modelo: "2021", rfcLast5: "05943" },
@@ -172,45 +183,58 @@ const vehicles = [
   { folio: "50697845", marca: "CHEVROLET", vinFull: "3GCUYEED6MG476841", modelo: "2021", rfcLast5: "05943" }
 ];
 
-// CAPTCHA
+// =====================
+// CAPTCHA ESTILO "vuUnqZ"
+// =====================
 let generatedCaptcha = "";
 
 function generarCaptcha() {
     const canvas = document.getElementById("captchaCanvas");
-    const ctx = canvas.getContext("2d");
+    const ctx    = canvas.getContext("2d");
 
-    canvas.width  = 160;
-    canvas.height = 50;
-    ctx.clearRect(0, 0, 160, 50);
+    const width  = canvas.width  = 160;
+    const height = canvas.height = 50;
 
+    ctx.clearRect(0, 0, width, height);
+
+    // texto random
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
     generatedCaptcha = "";
-
     for (let i = 0; i < 6; i++) {
         generatedCaptcha += chars.charAt(Math.floor(Math.random() * chars.length));
     }
 
-    ctx.font = "32px Georgia";
-    ctx.fillStyle = "#000";
+    // fondo gris clarito
+    ctx.fillStyle = "#f2f2f2";
+    ctx.fillRect(0, 0, width, height);
 
+    // estilo de fuente similar (serif, contorno negro)
+    ctx.font = "32px 'Times New Roman', serif";
+    ctx.textBaseline = "middle";
+
+    // dibujar letras con contorno
+    const startX = 10;
+    const step   = 22;
     for (let i = 0; i < generatedCaptcha.length; i++) {
-        const angle = (Math.random() * 0.6) - 0.3;
-        ctx.save();
-        ctx.translate(20 + i * 22, 32);
-        ctx.rotate(angle);
-        ctx.fillText(generatedCaptcha[i], 0, 0);
-        ctx.restore();
-    }
+        const ch = generatedCaptcha[i];
+        const x  = startX + i * step;
+        const y  = height / 2;
 
-    ctx.strokeStyle = "#000";
-    for (let i = 0; i < 8; i++) {
-        ctx.beginPath();
-        ctx.moveTo(Math.random() * 160, Math.random() * 50);
-        ctx.lineTo(Math.random() * 160, Math.random() * 50);
-        ctx.stroke();
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = "#000000";
+        ctx.fillStyle   = "#000000";
+
+        // ligero desplazamiento vertical aleatorio
+        const dy = (Math.random() * 6) - 3;
+
+        ctx.strokeText(ch, x, y + dy);
+        ctx.fillText(ch,   x, y + dy);
     }
 }
 
+// =====================
+// LIMPIAR
+// =====================
 function limpiar() {
     document.getElementById("folio").value = "";
     document.getElementById("vin").value   = "";
@@ -219,6 +243,9 @@ function limpiar() {
     generarCaptcha();
 }
 
+// =====================
+// VALIDAR
+// =====================
 function validar() {
     const folio = document.getElementById("folio").value.replace(/\s+/g, '').trim();
     const vin   = document.getElementById("vin").value.replace(/\s+/g, '').toUpperCase();
@@ -264,6 +291,7 @@ function validar() {
     window.location.href = url.toString();
 }
 
+// Eventos
 document.getElementById("clearBtn").addEventListener("click", limpiar);
 document.getElementById("validateBtn").addEventListener("click", validar);
 
