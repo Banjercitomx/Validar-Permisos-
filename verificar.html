@@ -13,7 +13,7 @@ body{
     background:#d7f2dc;
 }
 
-/* GREEN CIRCLE */
+/* CÍRCULO VERDE */
 .circle{
     width:420px;
     height:420px;
@@ -30,39 +30,55 @@ body{
     text-align:center;
 }
 
-/* ROWS */
+/* TITULO */
+h2{
+    text-align:center;
+    font-size:28px;
+    margin-top:18px;
+    font-weight:700;
+}
+
+/* FECHA CONSULTA */
+.consulta{
+    text-align:left;
+    font-size:18px;
+    margin:16px 18px 14px 18px;
+    color:#000;
+}
+
+/* FILAS */
 .row{
     background:white;
-    margin-bottom:14px;
-    padding:18px 22px;
+    margin:0 auto 10px auto;
+    padding:14px 18px;
     border-radius:6px;
     border:1px solid #cde7d0;
     display:flex;
     justify-content:space-between;
-    align-items:flex-start;   /* TOP-ALIGNED VALUES */
+    align-items:flex-start; /* valores alineados ARRIBA */
+    max-width:650px;
 }
 
-/* LABELS EXACTLY LIKE THE SCREENSHOT */
-label, .label{
-    font-size:22px;
+/* ETIQUETAS (IZQUIERDA) */
+.label{
+    font-size:21px;
     font-weight:700;
     color:#000;
-    line-height:26px;
-    width:55%;
+    line-height:24px;
+    width:52%;          /* más angosto para acercar el valor */
 }
 
-/* VALUES EXACTLY LIKE SCREENSHOT */
+/* VALORES (DERECHA) */
 .value{
-    font-size:22px;
+    font-size:21px;
     font-weight:700;
     color:#0b6f3c;
     text-align:right;
-    width:45%;
-    line-height:26px;
-    padding-left:5px;
+    width:48%;
+    line-height:24px;
 }
 
-/* BUTTON */
+/* BOTÓN */
 button{
     width:260px;
     background:#34a853;
@@ -73,7 +89,7 @@ button{
     font-size:22px;
     font-weight:700;
     display:block;
-    margin:40px auto;
+    margin:36px auto 32px auto;
 }
 </style>
 </head>
@@ -82,83 +98,107 @@ button{
 
 <div class="circle">¡Permiso<br>Vigente!</div>
 
-<h2 style="text-align:center;font-size:28px;margin-top:20px;font-weight:700;">
-    Permiso de Importación<br>de Auto Americano
-</h2>
+<h2>Permiso de Importación<br>de Auto Americano</h2>
 
-<!-- TIMESTAMP -->
-<div style="text-align:left;font-size:20px;margin:18px 22px;color:#000;">
+<div class="consulta">
     FECHA Y HORA DE CONSULTA: <span id="fechaConsulta"></span>
 </div>
 
-<!-- TABLE -->
-<div style="width:90%;max-width:650px;margin:auto;">
+<!-- TABLA -->
+<div>
 
-    <div class="row"><div class="label">FOLIO PERMISO:</div><div class="value" id="folio"></div></div>
+    <div class="row">
+        <div class="label">FOLIO PERMISO:</div>
+        <div class="value" id="folio"></div>
+    </div>
 
-    <div class="row"><div class="label">FECHA DE ALTA:</div><div class="value" id="alta"></div></div>
+    <div class="row">
+        <div class="label">FECHA DE ALTA:</div>
+        <div class="value" id="alta"></div>
+    </div>
 
-    <div class="row"><div class="label">FECHA MÁXIMA<br>DE RETORNO:</div><div class="value" id="retorno"></div></div>
+    <div class="row">
+        <div class="label">FECHA MÁXIMA<br>DE RETORNO:</div>
+        <div class="value" id="retorno"></div>
+    </div>
 
-    <div class="row"><div class="label">DIAS<br>DISPONIBLES:</div><div class="value" id="dias"></div></div>
+    <div class="row">
+        <div class="label">DIAS<br>DISPONIBLES:</div>
+        <div class="value" id="dias"></div>
+    </div>
 
-    <div class="row"><div class="label">MARCA:</div><div class="value" id="marca"></div></div>
+    <div class="row">
+        <div class="label">MARCA:</div>
+        <div class="value" id="marca"></div>
+    </div>
 
-    <div class="row"><div class="label">VIN:</div><div class="value" id="vin"></div></div>
+    <div class="row">
+        <div class="label">VIN:</div>
+        <div class="value" id="vin"></div>
+    </div>
 
-    <div class="row"><div class="label">MODELO:</div><div class="value" id="modelo"></div></div>
+    <div class="row">
+        <div class="label">MODELO:</div>
+        <div class="value" id="modelo"></div>
+    </div>
 
-    <div class="row"><div class="label">ESTATUS<br>PERMISO:</div><div class="value" id="estatus"></div></div>
+    <div class="row">
+        <div class="label">ESTATUS<br>PERMISO:</div>
+        <div class="value" id="estatus"></div>
+    </div>
 
-    <div class="row"><div class="label">REMOLQUE:</div><div class="value" id="remolque"></div></div>
+    <div class="row">
+        <div class="label">REMOLQUE:</div>
+        <div class="value" id="remolque"></div>
+    </div>
 
 </div>
 
-<!-- BUTTON -->
-<button onclick="window.location='index.html'">CERRAR</button>
+<button onclick="location.href='index.html'">CERRAR</button>
 
 <script>
-/* GET PARAMETERS */
-const p=new URLSearchParams(window.location.search);
-const folio=p.get("folio");
-const marca=p.get("marca");
-const modelo=p.get("modelo");
-const vin=p.get("vin");
+// Leer parámetros de la URL
+const p = new URLSearchParams(location.search);
+const folio  = p.get("folio");
+const marca  = p.get("marca");
+const modelo = p.get("modelo");
+const vin    = p.get("vin");
 
-/* MASK VIN LIKE SCREENSHOT */
-const maskedVin="********" + vin.slice(-8);
+// Enmascarar VIN
+const maskedVin = "********" + vin.slice(-8);
 
-/* DATE FORMAT */
-const now=new Date();
-const months=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+// Fechas
+const now = new Date();
+const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
-function format(d){
-    let day=("0"+d.getDate()).slice(-2);
-    let mon=months[d.getMonth()];
-    let y=d.getFullYear();
-    return day+"/"+mon+"/"+y;
+function formatDate(d){
+    const day = ("0" + d.getDate()).slice(-2);
+    const mon = months[d.getMonth()];
+    const y   = d.getFullYear();
+    return `${day}/${mon}/${y}`;
 }
 
-/* FECHA DE ALTA + RETORNO */
-const alta=format(now);
-const ret=new Date();
-ret.setDate(now.getDate()+180);
-const retorno=format(ret);
+const alta    = formatDate(now);
+const retDate = new Date(now.getTime());
+retDate.setDate(retDate.getDate() + 180);
+const retorno = formatDate(retDate);
 
-/* SET UI VALUES */
+// Poner texto en pantalla
 document.getElementById("fechaConsulta").textContent =
-    now.toLocaleDateString("es-MX",{day:"2-digit",month:"long",year:"numeric"}).toUpperCase()
-    + " " +
+    now.toLocaleDateString("es-MX",
+        { day:"2-digit", month:"long", year:"numeric" }
+    ).toUpperCase() +
+    " " +
     now.toLocaleTimeString("es-MX");
 
-document.getElementById("folio").textContent = folio;
-document.getElementById("alta").textContent = alta;
-document.getElementById("retorno").textContent = retorno;
-document.getElementById("dias").textContent = "180";
-document.getElementById("marca").textContent = marca;
-document.getElementById("vin").textContent = maskedVin;
-document.getElementById("modelo").textContent = modelo;
-document.getElementById("estatus").textContent = "VIGENTE";
+document.getElementById("folio").textContent    = folio;
+document.getElementById("alta").textContent     = alta;
+document.getElementById("retorno").textContent  = retorno;
+document.getElementById("dias").textContent     = "180";
+document.getElementById("marca").textContent    = marca;
+document.getElementById("vin").textContent      = maskedVin;
+document.getElementById("modelo").textContent   = modelo;
+document.getElementById("estatus").textContent  = "VIGENTE";
 document.getElementById("remolque").textContent = "SIN REMOLQUE";
 </script>
 
