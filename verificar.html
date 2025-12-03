@@ -30,7 +30,7 @@ body{
     text-align:center;
 }
 
-/* TITULO */
+/* TÍTULO */
 h2{
     text-align:center;
     font-size:28px;
@@ -46,39 +46,45 @@ h2{
     color:#000;
 }
 
-/* FILAS */
-.row{
-    background:white;
-    margin:0 auto 10px auto;
-    padding:14px 18px;
-    border-radius:6px;
-    border:1px solid #cde7d0;
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start; /* valores alineados ARRIBA */
+/* CONTENEDOR DOS TABLAS */
+.table-wrap{
+    width:90%;
     max-width:650px;
+    margin:0 auto;
+    display:flex;
+    gap:0;
 }
 
-/* ETIQUETAS (IZQUIERDA) */
+/* CADA COLUMNA (LABELS / VALUES) */
+.col{
+    width:50%;
+}
+
+/* CELDAS (se ven como filas) */
+.cell{
+    background:#ffffff;
+    border:1px solid #cde7d0;
+    border-radius:6px;
+    margin-bottom:10px;
+    padding:14px 16px;
+    font-size:20px;
+}
+
+/* LABELS: texto negro, NO bold */
 .label{
-    font-size:21px;
-    font-weight:700;
     color:#000;
-    line-height:24px;
-    width:52%;          /* más angosto para acercar el valor */
+    font-weight:400;    /* normal */
+    text-align:left;
 }
 
-/* VALORES (DERECHA) */
+/* VALUES: texto verde, SÍ bold */
 .value{
-    font-size:21px;
-    font-weight:700;
     color:#0b6f3c;
-    text-align:right;
-    width:48%;
-    line-height:24px;
+    font-weight:700;    /* bold */
+    text-align:left;    /* left aligned as requested */
 }
 
-/* BOTÓN */
+/* BOTÓN CERRAR */
 button{
     width:260px;
     background:#34a853;
@@ -104,52 +110,33 @@ button{
     FECHA Y HORA DE CONSULTA: <span id="fechaConsulta"></span>
 </div>
 
-<!-- TABLA -->
-<div>
+<!-- DOS TABLAS: IZQUIERDA ETIQUETAS, DERECHA RESULTADOS -->
+<div class="table-wrap">
 
-    <div class="row">
-        <div class="label">FOLIO PERMISO:</div>
-        <div class="value" id="folio"></div>
+    <!-- COLUMNA LABELS -->
+    <div class="col">
+        <div class="cell label">FOLIO PERMISO:</div>
+        <div class="cell label">FECHA DE ALTA:</div>
+        <div class="cell label">FECHA MÁXIMA<br>DE RETORNO:</div>
+        <div class="cell label">DIAS<br>DISPONIBLES:</div>
+        <div class="cell label">MARCA:</div>
+        <div class="cell label">VIN:</div>
+        <div class="cell label">MODELO:</div>
+        <div class="cell label">ESTATUS<br>PERMISO:</div>
+        <div class="cell label">REMOLQUE:</div>
     </div>
 
-    <div class="row">
-        <div class="label">FECHA DE ALTA:</div>
-        <div class="value" id="alta"></div>
-    </div>
-
-    <div class="row">
-        <div class="label">FECHA MÁXIMA<br>DE RETORNO:</div>
-        <div class="value" id="retorno"></div>
-    </div>
-
-    <div class="row">
-        <div class="label">DIAS<br>DISPONIBLES:</div>
-        <div class="value" id="dias"></div>
-    </div>
-
-    <div class="row">
-        <div class="label">MARCA:</div>
-        <div class="value" id="marca"></div>
-    </div>
-
-    <div class="row">
-        <div class="label">VIN:</div>
-        <div class="value" id="vin"></div>
-    </div>
-
-    <div class="row">
-        <div class="label">MODELO:</div>
-        <div class="value" id="modelo"></div>
-    </div>
-
-    <div class="row">
-        <div class="label">ESTATUS<br>PERMISO:</div>
-        <div class="value" id="estatus"></div>
-    </div>
-
-    <div class="row">
-        <div class="label">REMOLQUE:</div>
-        <div class="value" id="remolque"></div>
+    <!-- COLUMNA VALUES -->
+    <div class="col">
+        <div class="cell value" id="folio"></div>
+        <div class="cell value" id="alta"></div>
+        <div class="cell value" id="retorno"></div>
+        <div class="cell value" id="dias"></div>
+        <div class="cell value" id="marca"></div>
+        <div class="cell value" id="vin"></div>
+        <div class="cell value" id="modelo"></div>
+        <div class="cell value" id="estatus"></div>
+        <div class="cell value" id="remolque"></div>
     </div>
 
 </div>
@@ -158,7 +145,7 @@ button{
 
 <script>
 // Leer parámetros de la URL
-const p = new URLSearchParams(location.search);
+const p      = new URLSearchParams(location.search);
 const folio  = p.get("folio");
 const marca  = p.get("marca");
 const modelo = p.get("modelo");
@@ -168,11 +155,11 @@ const vin    = p.get("vin");
 const maskedVin = "********" + vin.slice(-8);
 
 // Fechas
-const now = new Date();
+const now    = new Date();
 const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
 function formatDate(d){
-    const day = ("0" + d.getDate()).slice(-2);
+    const day = ("0"+d.getDate()).slice(-2);
     const mon = months[d.getMonth()];
     const y   = d.getFullYear();
     return `${day}/${mon}/${y}`;
@@ -185,10 +172,8 @@ const retorno = formatDate(retDate);
 
 // Poner texto en pantalla
 document.getElementById("fechaConsulta").textContent =
-    now.toLocaleDateString("es-MX",
-        { day:"2-digit", month:"long", year:"numeric" }
-    ).toUpperCase() +
-    " " +
+    now.toLocaleDateString("es-MX",{day:"2-digit",month:"long",year:"numeric"}).toUpperCase()
+    + " " +
     now.toLocaleTimeString("es-MX");
 
 document.getElementById("folio").textContent    = folio;
