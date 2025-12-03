@@ -6,8 +6,13 @@
 <title>Valida tu permiso</title>
 
 <style>
+    /* Global font: match iOS / Banjercito look */
+    body, h1, p, label, input, button {
+        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+                     Arial, sans-serif;
+    }
+
     body {
-        font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
         background: #ffffff;
@@ -20,7 +25,7 @@
         font-weight: bold;
     }
 
-    p {
+    p.subtitle {
         color: #555;
         font-size: 17px;
         margin: 10px 25px 25px;
@@ -30,8 +35,7 @@
     .form-box {
         background: #f3f3f3;
         width: 92%;
-        margin: auto;
-        margin-top: 10px;
+        margin: 10px auto 0 auto;
         border-radius: 14px;
         padding: 22px 16px;
         text-align: left;
@@ -39,42 +43,44 @@
 
     label {
         display: block;
-        font-size: 18px;      /* Bigger label text */
+        font-size: 18px;          /* bigger labels */
         color: #000;
-        font-weight: normal;  /* NOT bold */
+        font-weight: 400;         /* NOT bold */
         margin-bottom: 6px;
         margin-top: 18px;
+        text-align: left;
     }
 
-    input {
+    input[type="text"] {
         width: 100%;
         height: 55px;
         border-radius: 10px;
         border: 1px solid #d0d0d0;
         font-size: 20px;
-        text-align: center;         /* center text */
+        text-align: center;       /* centered text */
         box-sizing: border-box;
         outline: none;
+        font-weight: 400;
     }
 
-    input::placeholder {
+    input[type="text"]::placeholder {
         color: #bcbcbc;
         text-align: center;
         font-size: 20px;
+        opacity: 1;
     }
 
-    /* CAPTCHA STYLE A (exact vuUnqZ style) */
+    /* CAPTCHA text (Times New Roman like vuUnqZ) */
     .captcha-box {
         margin: 25px 0 10px;
         width: 100%;
         text-align: center;
-        font-family: "Times New Roman", serif;
+        font-family: "Times New Roman", Times, serif;
         font-size: 42px;
         font-weight: normal;
         letter-spacing: 2px;
         color: #000;
         text-shadow: 0px 0px 1px #000; /* thin outline */
-        transform: rotate(0deg);
         user-select: none;
     }
 
@@ -91,6 +97,7 @@
         font-weight: 600;
         color: #fff;
         border-radius: 10px;
+        cursor: pointer;
     }
 
     .clear-btn {
@@ -103,174 +110,130 @@
         margin-left: 6px;
     }
 </style>
-
-<script>
-    function generateCaptcha() {
-        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        let text = "";
-        for (let i = 0; i < 6; i++) {
-            text += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        document.getElementById("captchaText").innerText = text;
-    }
-
-    window.onload = generateCaptcha;
-</script>
-
 </head>
 <body>
 
 <h1>Valida tu permiso</h1>
 
-<p>Por favor, captura los datos que se encuentran en tu Permiso de Importación</p>
+<p class="subtitle">
+    Por favor, captura los datos que se encuentran en tu Permiso de Importación
+</p>
 
 <div class="form-box">
 
-    <label>FOLIO DE PERMISO:</label>
-    <input type="text" placeholder="Folio permiso">
+    <label for="folio">FOLIO DE PERMISO:</label>
+    <input type="text" id="folio" placeholder="Folio permiso" maxlength="8" autocomplete="off" />
 
-    <label>ÚLTIMOS 5 CARACTERES DEL NÚMERO DE SERIE DEL VEHÍCULO O HIN DEL VEHÍCULO:</label>
-    <input type="text" placeholder="VIN/HIN">
+    <label for="vin">
+        ÚLTIMOS 5 CARACTERES DEL NÚMERO DE SERIE DEL VEHÍCULO O HIN DEL VEHÍCULO:
+    </label>
+    <input type="text" id="vin" placeholder="VIN/HIN" maxlength="5" autocomplete="off" />
 
-    <label>ÚLTIMOS 5 CARACTERES DEL NÚMERO DE DOCUMENTO O DEL RFC:</label>
-    <input type="text" placeholder="Número de documento o RFC">
+    <label for="rfc">
+        ÚLTIMOS 5 CARACTERES DEL NÚMERO DE DOCUMENTO O DEL RFC:
+    </label>
+    <input type="text" id="rfc" placeholder="Número de documento o RFC" maxlength="5" autocomplete="off" />
 
+    <!-- CAPTCHA -->
     <div id="captchaText" class="captcha-box"></div>
-
-    <input type="text" placeholder="Captcha">
+    <input type="text" id="captchaInput" placeholder="Captcha" autocomplete="off" />
 
     <div class="btn-row">
-        <button class="clear-btn">LIMPIAR</button>
-        <button class="validate-btn">VALIDAR</button>
+        <button class="clear-btn" id="clearBtn">LIMPIAR</button>
+        <button class="validate-btn" id="validateBtn">VALIDAR</button>
     </div>
 
 </div>
 
-</body>
-</html>
-// =====================
-// BASE DE DATOS
-// =====================
-const vehicles = [
-  { folio: "50984679", marca: "TOYOTA",    vinFull: "3TMLB5JN1RM011856", modelo: "2024", rfcLast5: "50278" },
-  { folio: "50387787", marca: "CHEVROLET", vinFull: "1GCPWBEH6MZ117056", modelo: "2021", rfcLast5: "05943" },
-  { folio: "50497849", marca: "HONDA",     vinFull: "5J6RW2H59HL056248", modelo: "2017", rfcLast5: "50278" },
-  { folio: "50697845", marca: "CHEVROLET", vinFull: "3GCUYEED6MG476841", modelo: "2021", rfcLast5: "05943" }
-];
+<script>
+    // =====================
+    // BASE DE DATOS
+    // =====================
+    const vehicles = [
+      { folio: "50984679", marca: "TOYOTA",    vinFull: "3TMLB5JN1RM011856", modelo: "2024", rfcLast5: "50278" },
+      { folio: "50387787", marca: "CHEVROLET", vinFull: "1GCPWBEH6MZ117056", modelo: "2021", rfcLast5: "05943" },
+      { folio: "50497849", marca: "HONDA",     vinFull: "5J6RW2H59HL056248", modelo: "2017", rfcLast5: "50278" },
+      { folio: "50697845", marca: "CHEVROLET", vinFull: "3GCUYEED6MG476841", modelo: "2021", rfcLast5: "05943" }
+    ];
 
-// =====================
-// CAPTCHA ESTILO "vuUnqZ"
-// =====================
-let generatedCaptcha = "";
+    // =====================
+    // CAPTCHA (texto Times New Roman estilo vuUnqZ)
+    // =====================
+    let generatedCaptcha = "";
 
-function generarCaptcha() {
-    const canvas = document.getElementById("captchaCanvas");
-    const ctx    = canvas.getContext("2d");
-
-    const width  = canvas.width  = 160;
-    const height = canvas.height = 50;
-
-    ctx.clearRect(0, 0, width, height);
-
-    // texto random
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
-    generatedCaptcha = "";
-    for (let i = 0; i < 6; i++) {
-        generatedCaptcha += chars.charAt(Math.floor(Math.random() * chars.length));
+    function generateCaptcha() {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+        let text = "";
+        for (let i = 0; i < 6; i++) {
+            text += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        generatedCaptcha = text;
+        document.getElementById("captchaText").textContent = text;
     }
 
-    // fondo gris clarito
-    ctx.fillStyle = "#f2f2f2";
-    ctx.fillRect(0, 0, width, height);
-
-    // estilo de fuente similar (serif, contorno negro)
-    ctx.font = "32px 'Times New Roman', serif";
-    ctx.textBaseline = "middle";
-
-    // dibujar letras con contorno
-    const startX = 10;
-    const step   = 22;
-    for (let i = 0; i < generatedCaptcha.length; i++) {
-        const ch = generatedCaptcha[i];
-        const x  = startX + i * step;
-        const y  = height / 2;
-
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = "#000000";
-        ctx.fillStyle   = "#000000";
-
-        // ligero desplazamiento vertical aleatorio
-        const dy = (Math.random() * 6) - 3;
-
-        ctx.strokeText(ch, x, y + dy);
-        ctx.fillText(ch,   x, y + dy);
-    }
-}
-
-// =====================
-// LIMPIAR
-// =====================
-function limpiar() {
-    document.getElementById("folio").value = "";
-    document.getElementById("vin").value   = "";
-    document.getElementById("rfc").value   = "";
-    document.getElementById("captchaInput").value = "";
-    generarCaptcha();
-}
-
-// =====================
-// VALIDAR
-// =====================
-function validar() {
-    const folio = document.getElementById("folio").value.replace(/\s+/g, '').trim();
-    const vin   = document.getElementById("vin").value.replace(/\s+/g, '').toUpperCase();
-    const rfc   = document.getElementById("rfc").value.replace(/\s+/g, '');
-    const cap   = document.getElementById("captchaInput").value.trim();
-
-    if (!folio || !vin || !rfc || !cap) {
-        alert("Por favor llena todos los campos.");
-        return;
+    // =====================
+    // LIMPIAR
+    // =====================
+    function limpiar() {
+        document.getElementById("folio").value = "";
+        document.getElementById("vin").value   = "";
+        document.getElementById("rfc").value   = "";
+        document.getElementById("captchaInput").value = "";
+        generateCaptcha();
     }
 
-    if (cap.toLowerCase() !== generatedCaptcha.toLowerCase()) {
-        alert("Captcha incorrecto. Intenta de nuevo.");
-        generarCaptcha();
-        return;
+    // =====================
+    // VALIDAR
+    // =====================
+    function validar() {
+        const folio = document.getElementById("folio").value.replace(/\s+/g, "").trim();
+        const vin   = document.getElementById("vin").value.replace(/\s+/g, "").toUpperCase();
+        const rfc   = document.getElementById("rfc").value.replace(/\s+/g, "");
+        const cap   = document.getElementById("captchaInput").value.trim();
+
+        if (!folio || !vin || !rfc || !cap) {
+            alert("Por favor llena todos los campos.");
+            return;
+        }
+
+        if (cap.toLowerCase() !== generatedCaptcha.toLowerCase()) {
+            alert("Captcha incorrecto. Intenta de nuevo.");
+            generateCaptcha();
+            return;
+        }
+
+        const v = vehicles.find(a => a.folio === folio);
+        if (!v) {
+            alert("El folio no existe.");
+            return;
+        }
+
+        const vinLast5 = v.vinFull.slice(-5).toUpperCase();
+        const vinInput = vin.replace(/O/g, "0").replace(/I/g, "1");
+
+        if (vinInput !== vinLast5) {
+            alert("Los últimos 5 caracteres del VIN/HIN no coinciden.");
+            return;
+        }
+
+        if (rfc !== v.rfcLast5) {
+            alert("Los últimos 5 caracteres del documento/RFC no coinciden.");
+            return;
+        }
+
+        const url = new URL("verificar.html", window.location.href);
+        url.searchParams.set("folio",  v.folio);
+        url.searchParams.set("marca",  v.marca);
+        url.searchParams.set("modelo", v.modelo);
+        url.searchParams.set("vin",    v.vinFull);
+
+        window.location.href = url.toString();
     }
 
-    const v = vehicles.find(a => a.folio === folio);
-    if (!v) {
-        alert("El folio no existe.");
-        return;
-    }
+    document.getElementById("clearBtn").addEventListener("click", limpiar);
+    document.getElementById("validateBtn").addEventListener("click", validar);
 
-    const vinLast5 = v.vinFull.slice(-5).toUpperCase();
-    const vinInput = vin.replace(/O/g, "0").replace(/I/g, "1");
-
-    if (vinInput !== vinLast5) {
-        alert("Los últimos 5 caracteres del VIN/HIN no coinciden.");
-        return;
-    }
-
-    if (rfc !== v.rfcLast5) {
-        alert("Los últimos 5 caracteres del documento/RFC no coinciden.");
-        return;
-    }
-
-    const url = new URL("verificar.html", window.location.href);
-    url.searchParams.set("folio",  v.folio);
-    url.searchParams.set("marca",  v.marca);
-    url.searchParams.set("modelo", v.modelo);
-    url.searchParams.set("vin",    v.vinFull);
-
-    window.location.href = url.toString();
-}
-
-// Eventos
-document.getElementById("clearBtn").addEventListener("click", limpiar);
-document.getElementById("validateBtn").addEventListener("click", validar);
-
-window.onload = generarCaptcha;
+    window.onload = generateCaptcha;
 </script>
 
 </body>
