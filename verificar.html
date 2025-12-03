@@ -30,7 +30,7 @@ body{
     text-align:center;
 }
 
-/* TITULO */
+/* TÍTULO */
 h2{
     text-align:center;
     font-size:28px;
@@ -46,44 +46,45 @@ h2{
     color:#000;
 }
 
-/* FILA */
+/* FILA (UNA POR CADA DATO) */
 .row{
     display:flex;
     width:90%;
     max-width:650px;
-    margin:0 auto 10px auto;
+    margin:0 auto 8px auto;   /* un poco más pegado entre filas */
 }
 
-/* CELDAS */
+/* CELDAS GENERALES */
 .cell{
     padding:14px 16px;
-    background:#fff;
-    border:1px solid #cde7d0;
+    background:#ffffff;
     font-size:20px;
-    border-radius:6px;
+    line-height:22px;
 }
 
-/* LABELS (LEFT) */
+/* LABELS (IZQUIERDA) – texto negro, NO bold */
 .label{
     width:50%;
     color:#000;
     font-weight:400;
     text-align:left;
-    line-height:22px;
-    border-radius:6px 0 0 6px;
+    border:1px solid #cde7d0;
+    border-right:none;              /* quita la línea del centro */
+    border-radius:6px 0 0 6px;      /* solo esquinas izquierdas redondeadas */
 }
 
-/* VALUES (RIGHT) */
+/* VALUES (DERECHA) – texto verde, SÍ bold */
 .value{
     width:50%;
     color:#0b6f3c;
     font-weight:700;
     text-align:left;
-    line-height:22px;
-    border-radius:0 6px 6px 0;
+    border:1px solid #cde7d0;
+    border-left:none;              /* quita la línea del centro */
+    border-radius:0 6px 6px 0;     /* solo esquinas derechas redondeadas */
 }
 
-/* BUTTON */
+/* BOTÓN */
 button{
     width:260px;
     background:#34a853;
@@ -159,7 +160,7 @@ button{
 
 <script>
 // Leer parámetros
-const p = new URLSearchParams(location.search);
+const p      = new URLSearchParams(location.search);
 const folio  = p.get("folio");
 const marca  = p.get("marca");
 const modelo = p.get("modelo");
@@ -169,7 +170,7 @@ const vin    = p.get("vin");
 const maskedVin = "********" + vin.slice(-8);
 
 // Fechas
-const now = new Date();
+const now    = new Date();
 const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
 function formatDate(d){
@@ -180,23 +181,24 @@ function formatDate(d){
 }
 
 const alta = formatDate(now);
-const ret = new Date(now.getTime());
+const ret  = new Date(now.getTime());
 ret.setDate(ret.getDate()+180);
 const retorno = formatDate(ret);
 
 // Asignar datos
 document.getElementById("fechaConsulta").textContent =
-    now.toLocaleDateString("es-MX",{day:"2-digit",month:"long",year:"numeric"}).toUpperCase() +
-    " " + now.toLocaleTimeString("es-MX");
+    now.toLocaleDateString("es-MX",
+        {day:"2-digit",month:"long",year:"numeric"}).toUpperCase()
+    + " " + now.toLocaleTimeString("es-MX");
 
-document.getElementById("folio").textContent = folio;
-document.getElementById("alta").textContent = alta;
-document.getElementById("retorno").textContent = retorno;
-document.getElementById("dias").textContent = "180";
-document.getElementById("marca").textContent = marca;
-document.getElementById("vin").textContent = maskedVin;
-document.getElementById("modelo").textContent = modelo;
-document.getElementById("estatus").textContent = "VIGENTE";
+document.getElementById("folio").textContent    = folio;
+document.getElementById("alta").textContent     = alta;
+document.getElementById("retorno").textContent  = retorno;
+document.getElementById("dias").textContent     = "180";
+document.getElementById("marca").textContent    = marca;
+document.getElementById("vin").textContent      = maskedVin;
+document.getElementById("modelo").textContent   = modelo;
+document.getElementById("estatus").textContent  = "VIGENTE";
 document.getElementById("remolque").textContent = "SIN REMOLQUE";
 </script>
 
