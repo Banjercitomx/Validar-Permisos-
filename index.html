@@ -127,22 +127,26 @@ const vehicles = [
   { folio: "50387787", marca: "CHEVROLET", vinFull: "1GCPWBEH6MZ117056", modelo: "2021", rfcLast5: "05943", fechaAlta: "2025-12-19" },
   { folio: "50497849", marca: "HONDA",     vinFull: "5J6RW2H59HL056248", modelo: "2017", rfcLast5: "50278", fechaAlta: "2025-12-19" },
   { folio: "50697845", marca: "CHEVROLET", vinFull: "3GCUYEED6MG476841", modelo: "2021", rfcLast5: "05943", fechaAlta: "2025-12-19" }
-  { folio: "50783910", marca: "CHEVROLET", vinFull: "3GCUYEED6MG411111", modelo: "2001", rfcLast5: "05943", fechaAlta: "2025-12-19" }
+  { folio: "50783910", marca: "CHEVROLET", vinFull: "1GCEC14V41E297383", modelo: "2001", rfcLast5: "05943", fechaAlta: "2025-12-19" }
 ];
 
 /* ========= CAPTCHA ========= */
+
 let generatedCaptcha = "";
 
 function generateCaptcha() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
   let text = "";
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 5; i++) {
     text += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   generatedCaptcha = text;
   document.getElementById("captchaText").textContent = text;
 }
 
+window.onload = generateCaptcha;
+  
+ }
 /* ========= LIMPIAR ========= */
 function limpiar() {
   document.getElementById("folio").value = "";
