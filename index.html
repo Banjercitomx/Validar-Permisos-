@@ -135,18 +135,14 @@ const vehicles = [
 let generatedCaptcha = "";
 
 function generateCaptcha() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-  let text = "";
-  for (let i = 0; i < 5; i++) {
-    text += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  generatedCaptcha = text;
-  document.getElementById("captchaText").textContent = text;
-}
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+    let text = "";
+    for (let i = 0; i < 6; i++) {
+        text += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    generatedCaptcha = text;
+    document.getElementById("captchaText").textContent = text;
 
-window.onload = generateCaptcha;
-  
- }
 /* ========= LIMPIAR ========= */
 function limpiar() {
   document.getElementById("folio").value = "";
@@ -155,7 +151,6 @@ function limpiar() {
   document.getElementById("captchaInput").value = "";
   generateCaptcha();
 }
-
 /* ========= VALIDAR ========= */
 function validar() {
   const folio = document.getElementById("folio").value.replace(/\s+/g, "").trim();
