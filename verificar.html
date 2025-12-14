@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verificar Permiso</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#d7f2dc; }
+  .circle {
+    width: 420px; height:420px; background:#34a853;
+    border-radius:50%; margin:25px auto 0 auto;
+    display:flex; justify-content:center; align-items:center;
+    color:white; font-size:52px; font-weight:700; text-align:center;
+    text-shadow:2px 2px 3px black;
+  }
+  h2 { text-align:center; margin-top:18px; font-size:28px; font-weight:700; }
+
+  .consulta{
+    text-align:left;
+    font-size:18px;
+    margin:16px 18px 14px 18px;
+    color:#000;
+  }
+
+  .row{
+    display:flex;
+    width:90%;
+    max-width:650px;
+    margin:0 auto 8px auto;
+  }
+
+  .cell{
+    padding:14px 16px;
+    background:#ffffff;
+    font-size:20px;
+    line-height:22px;
+  }
+
+  .label{
+    width:50%;
+    color:#000;
+    font-weight:400;
+    text-align:left;
+    border:1px solid #cde7d0;
+    border-right:none;
+    border-radius:6px 0 0 6px;
+  }
+
+  .value{
+    width:50%;
+    color:#0b6f3c;
+    font-weight:700;
+    text-align:left;
+    border:1px solid #cde7d0;
+    border-left:none;
+    border-radius:0 6px 6px 0;
+  }
+
+  button{
+    width:260px;
+    background:#34a853;
+    color:white;
+    border:none;
+    padding:18px;
+    border-radius:10px;
+    font-size:22px;
+    font-weight:700;
+    display:block;
+    margin:36px auto 32px auto;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="circle">¡Permiso<br>Vigente!</div>
+<h2>Permiso de Importación<br>de Auto Americano</h2>
+
+<div class="consulta">
+  FECHA Y HORA DE CONSULTA: <span id="fechaConsulta"></span>
+</div>
+
+<div class="row"><div class="cell label">FOLIO PERMISO:</div><div class="cell value" id="folio"></div></div>
+<div class="row"><div class="cell label">FECHA DE ALTA:</div><div class="cell value" id="alta"></div></div>
+<div class="row"><div class="cell label">FECHA MÁXIMA<br>DE RETORNO:</div><div class="cell value" id="retorno"></div></div>
+<div class="row"><div class="cell label">DIAS<br>DISPONIBLES:</div><div class="cell value" id="dias"></div></div>
+<div class="row"><div class="cell label">MARCA:</div><div class="cell value" id="marca"></div></div>
+<div class="row"><div class="cell label">VIN:</div><div class="cell value" id="vin"></div></div>
+<div class="row"><div class="cell label">MODELO:</div><div class="cell value" id="modelo"></div></div>
+<div class="row"><div class="cell label">ESTATUS<br>PERMISO:</div><div class="cell value" id="estatus"></div></div>
+<div class="row"><div class="cell label">REMOLQUE:</div><div class="cell value" id="remolque"></div></div>
+
+<button onclick="location.href='index.html'">CERRAR</button>
+
+<script>
+const p = new URLSearchParams(location.search);
+
+const folio  = p.get("folio")  || "";
+const marca  = p.get("marca")  || "";
+const modelo = p.get("modelo") || "";
+const vin    = p.get("vin")    || "";
+
+// ✅ Read dates from URL (editable from index.html)
+const fechaAltaRaw = p.get("fechaAlta") || ""; // YYYY-MM-DD
+const DIAS_PERMISO = parseInt(p.get("dias") || "180", 10);
+
+const maskedVin = vin ? ("********" + vin.slice(-8)) : "";
+
+const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+function formatBanjercito(yyyy_mm_dd){
+  if (!yyyy_mm_dd || !yyyy_mm_dd.includes("-")) return "";
+  const [y,m,d] = yyyy_mm_dd.split("-");
+  const mm = parseInt(m,10);
+  return `${d}/${months[mm-1]}/${y}`;
+}
+function addDays(yyyy_mm_dd, days){
+  const dt = new Date(yyyy_mm_dd + "T12:00:00");
+  dt.setDate(dt.getDate() + days);
+  const y = dt.getFullYear();
+  const m = String(dt.getMonth()+1).padStart(2,"0");
+  const d = String(dt.getDate()).padStart(2,"0");
+  return `${y}-${m}-${d}`;
+}
+
+const altaDisplay = formatBanjercito(fechaAltaRaw);
+const retornoRaw = fechaAltaRaw ? addDays(fechaAltaRaw, DIAS_PERMISO) : "";
+const retornoDisplay = retornoRaw ? formatBanjercito(retornoRaw) : "";
+
+// Consulta time (local)
+const now = new Date();
+document.getElementById("fechaConsulta").textContent =
+  now.toLocaleDateString("es-MX",{day:"2-digit",month:"long",year:"numeric"}).toUpperCase() +
+  " " +
+  now.toLocaleTimeString("es-MX");
+
+document.getElementById("folio").textContent   = folio;
+document.getElementById("alta").textContent    = altaDisplay;
+document.getElementById("retorno").textContent = retornoDisplay;
+document.getElementById("dias").textContent    = String(DIAS_PERMISO);
+document.getElementById("marca").textContent   = marca;
+document.getElementById("vin").textContent     = maskedVin;
+document.getElementById("modelo").textContent  = modelo;
+document.getElementById("estatus").textContent = "VIGENTE";
+document.getElementById("remolque").textContent = "SIN REMOLQUE";
+</script>
+
+</body>
+</html>
