@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Valida tu permiso</title>
+
+<style>
+  body, h1, p, label, input, button {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  }
+  body { margin:0; padding:0; background:#ffffff; color:#000; }
+  h1{
+    text-align:center;
+    font-size:28px;
+    font-weight:600;
+    margin-top:40px;
+    margin-bottom:8px;
+  }
+  p.subtitle{
+    text-align:center;
+    font-size:16px;
+    line-height:1.3;
+    color:#555;
+    margin:0 20px 22px 20px;
+  }
+  .card{
+    background:#f3f3f3;
+    border-radius:16px;
+    width:92%;
+    margin:0 auto 24px auto;
+    padding:20px 18px 22px 18px;
+    box-sizing:border-box;
+  }
+  label{
+    display:block;
+    font-size:18px;
+    font-weight:400;
+    margin-top:18px;
+    margin-bottom:6px;
+    text-align:left;
+  }
+  .card label:first-of-type{ margin-top:6px; }
+
+  input[type="text"]{
+    width:100%;
+    height:54px;
+    border-radius:12px;
+    border:1px solid #d0d0d0;
+    font-size:22px;
+    text-align:center;
+    box-sizing:border-box;
+    padding:0 12px;
+    outline:none;
+  }
+  input[type="text"]::placeholder{
+    font-size:22px;
+    color:#c4c4c4;
+    opacity:1;
+  }
+
+  /* CAPTCHA (Times New Roman), left aligned + slightly shifted right */
+  .captcha-box{
+    margin-top:18px;
+    margin-bottom:8px;
+    width:100%;
+    text-align:left;
+    padding-left:20px;
+    font-family:"Times New Roman", Times, serif;
+    font-size:30px;
+    font-weight:normal;
+    letter-spacing:0.5px;
+    color:#000;
+    text-shadow:0 0 1px #000; /* thin outline */
+    user-select:none;
+  }
+
+  .buttons{
+    display:flex;
+    margin-top:18px;
+    gap:0;
+  }
+  button{
+    flex:1;
+    border:none;
+    height:56px;
+    font-size:18px;
+    font-weight:600;
+    color:#fff;
+    background:#2ca34f;
+    cursor:pointer;
+  }
+  #clearBtn{ border-radius:12px 0 0 12px; }
+  #validateBtn{ border-radius:0 12px 12px 0; }
+</style>
+</head>
+
+<body>
+  <h1>Valida tu permiso</h1>
+  <p class="subtitle">Por favor, captura los datos que se encuentran en tu Permiso de Importación</p>
+
+  <div class="card">
+    <label for="folio">FOLIO DE PERMISO:</label>
+    <input type="text" id="folio" placeholder="Folio permiso" maxlength="8" autocomplete="off" />
+
+    <label for="vin">ÚLTIMOS 5 CARACTERES DEL NÚMERO DE SERIE DEL VEHÍCULO O HIN DEL VEHÍCULO:</label>
+    <input type="text" id="vin" placeholder="VIN/HIN" maxlength="5" autocomplete="off" />
+
+    <label for="rfc">ÚLTIMOS 5 CARACTERES DEL NÚMERO DE DOCUMENTO O DEL RFC:</label>
+    <input type="text" id="rfc" placeholder="Número de documento o RFC" maxlength="5" autocomplete="off" />
+
+    <div id="captchaText" class="captcha-box"></div>
+    <input type="text" id="captchaInput" placeholder="Captcha" autocomplete="off" />
+
+    <div class="buttons">
+      <button type="button" id="clearBtn">LIMPIAR</button>
+      <button type="button" id="validateBtn">VALIDAR</button>
+    </div>
+  </div>
+
+<script>
+/* =======================
+   BASE DE DATOS VEHÍCULOS
+   ======================= */
+const vehicles = [
+  { folio: "50984679", marca: "TOYOTA",    vinFull: "3TMLB5JN1RM011856", modelo: "2024", rfcLast5: "50278", fechaAlta: "2025-12-19" },
+  { folio: "50387787", marca: "CHEVROLET", vinFull: "1GCPWBEH6MZ117056", modelo: "2021", rfcLast5: "05943", fechaAlta: "2025-12-19" },
+  { folio: "50497849", marca: "HONDA",     vinFull: "5J6RW2H59HL056248", modelo: "2017", rfcLast5: "50278", fechaAlta: "2025-12-19" },
+  { folio: "50697845", marca: "CHEVROLET", vinFull: "3GCUYEED6MG476841", modelo: "2021", rfcLast5: "05943", fechaAlta: "2025-12-19" }
+];
+
+/* ========= CAPTCHA ========= */
+let generatedCaptcha = "";
+
+function generateCaptcha() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+  let text = "";
+  for (let i = 0; i < 6; i++) {
+    text += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  generatedCaptcha = text;
+  document.getElementById("captchaText").textContent = text;
+}
+
+/* ========= LIMPIAR ========= */
+function limpiar() {
+  document.getElementById("folio").value = "";
+  document.getElementById("vin").value   = "";
+  document.getElementById("rfc").value   = "";
+  document.getElementById("captchaInput").value = "";
+  generateCaptcha();
+}
+
+/* ========= VALIDAR ========= */
+function validar() {
+  const folio = document.getElementById("folio").value.replace(/\s+/g, "").trim();
+  const vin   = document.getElementById("vin").value.replace(/\s+/g, "").toUpperCase();
+  const rfc   = document.getElementById("rfc").value.replace(/\s+/g, "");
+  const cap   = document.getElementById("captchaInput").value.trim();
+
+  if (!folio || !vin || !rfc || !cap) {
+    alert("Por favor llena todos los campos.");
+    return;
+  }
+
+  if (cap.toLowerCase() !== generatedCaptcha.toLowerCase()) {
+    alert("Captcha incorrecto. Intenta de nuevo.");
+    generateCaptcha();
+    document.getElementById("captchaInput").value = "";
+    return;
+  }
+
+  const v = vehicles.find(a => a.folio === folio);
+  if (!v) {
+    alert("El folio no existe.");
+    return;
+  }
+
+  const vinLast5 = v.vinFull.slice(-5).toUpperCase();
+  const vinInput = vin.replace(/O/g, "0").replace(/I/g, "1");
+
+  if (vinInput !== vinLast5) {
+    alert("Los últimos 5 caracteres del VIN/HIN no coinciden.");
+    return;
+  }
+
+  if (rfc !== v.rfcLast5) {
+    alert("Los últimos 5 caracteres del documento/RFC no coinciden.");
+    return;
+  }
+
+  const url = new URL("verificar.html", window.location.href);
+  url.searchParams.set("folio", v.folio);
+  url.searchParams.set("marca", v.marca);
+  url.searchParams.set("modelo", v.modelo);
+  url.searchParams.set("vin", v.vinFull);
+  url.searchParams.set("fechaAlta", v.fechaAlta);
+
+  window.location.href = url.toString();
+}
+
+/* Eventos */
+document.getElementById("clearBtn").addEventListener("click", limpiar);
+document.getElementById("validateBtn").addEventListener("click", validar);
+
+window.onload = generateCaptcha;
+</script>
+</body>
+</html>
